@@ -3,6 +3,7 @@ import axios from 'axios'
 
 import { Layout, Menu, Icon } from 'antd';
 import { withRouter } from 'react-router-dom';
+import { connect } from 'react-redux';
 
 const { Sider } = Layout;
 
@@ -21,12 +22,11 @@ function SideMenu(props) {
     let [menuList, setMenuList] = useState([])
 
     const handleClick = e => {
-        console.log('click ', e);
+        // console.log('click ', e);
     };
 
     const axsMenuList = async () => {
         const res = await axios.get('http://localhost:3004/rights?_embed=children')
-        console.log(res.data);
         setMenuList(res.data)
     }
 
@@ -72,9 +72,10 @@ function SideMenu(props) {
         axsMenuList()
     }, [])
 
+    const { collapsed } = props
 
     return (
-        <Sider trigger={null} collapsible >
+        <Sider trigger={null} collapsible collapsed={collapsed}>
             <div style={{ height: '100%', display: 'flex', flexDirection: "column" }}>
                 <div className="logo" style={{ color: '#fff', fontSize: 24, textAlign: 'center' }}>后台管理系统</div>
                 <Menu
@@ -94,6 +95,12 @@ function SideMenu(props) {
     )
 }
 
-export default withRouter(SideMenu)
+const mapStateToProps = (state) => {
+    return {
+        collapsed: state.collapsedReducer.collapsed
+    }
+}
+
+export default connect(mapStateToProps)(withRouter(SideMenu))
 
 

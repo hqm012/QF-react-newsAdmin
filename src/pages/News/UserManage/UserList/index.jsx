@@ -26,17 +26,17 @@ export default function UserList() {
         setDataSource(roleObj[roleId] === 'superadmin' ? list : [
             ...list.filter(item => item.roleId >= roleId && item.region === leizhen),
         ])
-        console.log(list);
+        // console.log(list);
     }
     const getRegion = async () => {
         let res = await axios.get('http://localhost:3004/regions')
         setRegion(res.data)
-        console.log(res.data);
+        // console.log(res.data);
     }
     const getRoles = async () => {
         let res = await axios.get('http://localhost:3004/roles')
         setRoles(res.data)
-        console.log(res.data);
+        // console.log(res.data);
     }
 
     const handleOk = () => {

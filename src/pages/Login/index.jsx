@@ -2,7 +2,7 @@ import './index.scss'
 import axios from 'axios'
 import React, { Component } from 'react'
 import { Form, Icon, Input, Button, Checkbox, message } from 'antd';
-import { withRouter } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 
 // import React from 'react'
 
@@ -11,6 +11,9 @@ function index(props) {
     <div className="login-container">
       <div className="header">
         后台管理系统
+        <span>
+          <Link to="/preview">预览新闻</Link>
+        </span>
       </div>
       <div className="form-container">
         <WrappedNormalLoginForm  {...props} />
@@ -28,7 +31,6 @@ class NormalLoginForm extends React.Component {
       if (!err) {
         let res = await axios.get(`http://localhost:3004/users?username=${values.username}&password=${values.password}&roleState=true&_expand=role`)
         if (res.data.length) {
-          console.log(this.props);
           localStorage.setItem('token', JSON.stringify(res.data[0]))
           this.props.history.push('/home')
         } else {
@@ -40,7 +42,6 @@ class NormalLoginForm extends React.Component {
   };
 
   validatePwd = (rule, value, callback) => {
-    console.log(rule, value);
     if (!value) {
       callback('密码必须输入')
     } else if (value.length < 2) {

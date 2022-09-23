@@ -28,6 +28,7 @@ export default class News extends Component {
                             padding: 24,
                             background: '#fff',
                             minHeight: 280,
+                            overflow: 'auto'
                         }}
                     >
 

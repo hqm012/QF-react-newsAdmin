@@ -1,18 +1,79 @@
-import { Button, Form, PageHeader, Steps, Input, Row, Select } from 'antd'
-import React, { useState } from 'react'
+import { Button, Form, PageHeader, Steps, Input, notification, Select, message } from 'antd'
+import React, { useEffect, useState } from 'react'
 import style from './index.module.scss'
-import request from '/utils/request'
-console.log(request);
+import request from '@/utils/request'
+import Wysiwyg from '@/component/Wysiwyg'
 
 const { Step } = Steps
 const { Option } = Select
 
 function NewsAdd(props) {
+    const user = JSON.parse(localStorage.getItem('token'))
+    console.log(user);
     const [current, setCurrent] = useState(0)
+    const [categoryList, setCategoryList] = useState([])
 
-    const handleNext = () => setCurrent((c) => c + 1)
+    const getCategoryList = async () => {
+        let res = await request('/categories')
+        setCategoryList(res.data)
+    }
+
+    useEffect(() => {
+        getCategoryList()
+    }, [])
+
+    const [formInfo, setFormInfo] = useState({})
+    const handleNext = () => {
+        // console.log(props.form);
+        if (current === 0) {
+            props.form.validateFields((err, values) => {
+                if (!err) {
+                    console.log(values);
+                    setFormInfo(values)
+                    setCurrent((c) => c + 1)
+                }
+            })
+        } else {
+            if (content && content.trim() !== '<p></p>') {
+                setCurrent((c) => c + 1)
+            } else {
+                message.error('不能为空')
+            }
+        }
+
+    }
     const handlePre = () => setCurrent((c) => c - 1)
-    console.log(props);
+
+    const [content, setContent] = useState('')
+    const getContent = (value) => {
+        console.log(value);
+        setContent(value)
+    }
+
+    const handleSave = async (auditState) => {
+        let res = await request.post('/news', {
+            ...formInfo,
+            content,
+            region: user.region ? user.region : "全球",
+            author: user.username,
+            roleId: user.roleId,
+            auditState,
+            publishState: 0,
+            createTime: Date.now(),
+            star: 0,
+            view: 0,
+            // publishTime:0
+        })
+        console.log(res);
+        props.history.push(auditState === 0 ? '/news-manage/draft' : '/audit-manage/list')
+        notification.info({
+            message: `${auditState === 0 ? '保存' : '提交'}成功`,
+            description:
+                `你可以到${auditState === 0 ? '草稿箱' : '审核管理'}查看你的内容`,
+            placement: 'bottomRight',
+        });
+    }
+
     const { getFieldDecorator } = props.form
     const formItemLayout = {
         labelCol: { span: 4 },
@@ -47,14 +108,18 @@ function NewsAdd(props) {
                                 { required: true }
                             ]
                         })(<Select>
-                            <Option value={111}>111</Option>
+                            {categoryList.map(item => <Option
+                                key={item.id}
+                                value={item.value}
+                            >{item.title}</Option>)}
+
                         </Select>)}
                     </Form.Item>
 
                 </Form>
             </div>
             <div className={current === 1 ? style.active : style.hidden}>
-                22222
+                <Wysiwyg getContent={getContent}></Wysiwyg>
             </div>
             <div className={current === 2 ? style.active : style.hidden}>
                 33333
@@ -62,8 +127,8 @@ function NewsAdd(props) {
 
             {current > 0 && < Button onClick={handlePre}> 上一步</Button>}
             {current < 2 ? <Button type='primary' onClick={handleNext}>下一步</Button> : <>
-                <Button>保存草稿</Button>
-                <Button>提交审核</Button>
+                <Button onClick={() => handleSave(0)}>保存草稿</Button>
+                <Button onClick={() => handleSave(1)}>提交审核</Button>
             </>}
         </div >
     )

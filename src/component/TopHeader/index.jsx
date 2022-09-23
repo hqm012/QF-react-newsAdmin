@@ -3,13 +3,15 @@ import React, { useState } from 'react'
 import { Layout, Icon, Menu, Dropdown, Avatar, Button } from 'antd';
 
 import { withRouter } from 'react-router-dom';
+import { connect } from 'react-redux';
 
 const { Header } = Layout;
 
 
 
 function TopHeader(props) {
-    const [collapsed, setCollasped] = useState(false)
+    // const [collapsed, setCollasped] = useState(false)
+    const { collapsed, changeCollapsed } = props
     const { username, role: { roleName } } = JSON.parse(localStorage.getItem('token'))
     const menu = (
         <Menu>
@@ -36,7 +38,7 @@ function TopHeader(props) {
             <Icon
                 className="trigger"
                 type={collapsed ? 'menu-unfold' : 'menu-fold'}
-                onClick={() => { setCollasped(!collapsed) }}
+                onClick={() => { changeCollapsed() }}
             />
             <Dropdown overlay={menu}>
                 <a className="ant-dropdown-link" onClick={e => e.preventDefault()}>
@@ -49,4 +51,17 @@ function TopHeader(props) {
     )
 }
 
-export default withRouter(TopHeader)
+const mapStateToProps = (state) => {
+    // console.log(state);
+    return {
+        collapsed: state.collapsedReducer.collapsed
+    }
+}
+
+const mapDispatchToProps = {
+    changeCollapsed() {
+        return { type: 'changeCollapsed' }
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(TopHeader)) 

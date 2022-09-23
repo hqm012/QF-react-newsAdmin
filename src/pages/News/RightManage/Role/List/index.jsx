@@ -17,7 +17,6 @@ export default function RoleList() {
     const getTreeList = async () => {
         let res = await axios.get('http://localhost:3004/rights?_embed=children')
         setTreeList(res.data)
-        console.log(res.data);
     }
 
     const handleConfirm = (renderItem) => {
@@ -26,7 +25,7 @@ export default function RoleList() {
     }
 
     const handleCancel = () => {
-        console.log('行吧');
+        // console.log('行吧');
     }
 
     const handleOk = () => {

@@ -25,7 +25,6 @@ export default function RightList() {
     }
 
     const cancel = (e, renderItem) => {
-        console.log(e, renderItem);
         message.error('不是啊')
     }
 
@@ -41,7 +40,6 @@ export default function RightList() {
                 pagepermission: renderItem.pagepermission
             })
         }
-        console.log(renderItem);
     }
 
     const columns = [
